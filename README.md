@@ -1,6 +1,8 @@
 # azure-scala-sdk
 Azure Scala SDK tooling
 
+Azure Scala SDK is lovingly developed by Headstorm's Open Source group. Please reach out to us at: opensource@headstorm.com
+
 ## Usage
 
 ## Development Setup
