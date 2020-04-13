@@ -1,3 +1,5 @@
+package com.headstorm.azurescalasdk.storage
+
 import sttp.client._
 
 object SimpleDriver {

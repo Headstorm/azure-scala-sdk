@@ -2,5 +2,7 @@
 *.log
 
 out/
+target/
+.DS_Store
 .idea/
 .idea_modules/

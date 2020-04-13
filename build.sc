@@ -5,7 +5,10 @@ object storage extends SbtModule {
 
    def scalaVersion = "2.13.1"
 
-   def ivyDeps = Agg(ivy"com.azure:azure-storage-blob:12.6.0")
+   def ivyDeps = Agg(
+      ivy"com.azure:azure-storage-blob:12.6.0",
+      ivy"com.softwaremill.sttp.client::core:2.0.7"
+   )
 
    object test extends Tests {
 
