@@ -2,5 +2,5 @@
 *.log
 
 out/
-idea/
-idea_modules/
+.idea/
+.idea_modules/
