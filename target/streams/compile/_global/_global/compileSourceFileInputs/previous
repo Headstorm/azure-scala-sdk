@@ -1,1 +1,0 @@
-["sbt.Task[scala.collection.immutable.Map[java.lang.String, scala.collection.Seq[scala.Tuple2[java.nio.file.Path, sbt.nio.FileStamp]]]]",{"2.12.10":{"hashes":[["/Users/ericbaumann/Documents/Projects/Scala Driver for Azure/SimpleDriver/src/main/scala/SimpleDriver.scala","ddd2b0f10295f8d45faed8d3d52f59bab7cfb8d8"]],"lastModifiedTimes":[]}}]
