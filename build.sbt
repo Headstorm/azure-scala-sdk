@@ -68,6 +68,8 @@ val commonDependencies = Seq(
   "com.azure" % "azure-storage-blob" % "12.6.0",
   "com.softwaremill.sttp.client" %% "core" % "2.0.9",
 
+  "co.fs2" %% "fs2-core" % "2.3.0",
+
   "org.typelevel" %% "cats-core" % "2.1.1",
   "org.typelevel" %% "cats-effect" % "2.1.2",
 

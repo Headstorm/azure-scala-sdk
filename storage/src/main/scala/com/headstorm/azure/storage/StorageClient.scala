@@ -1,24 +1,35 @@
 package com.headstorm.azure.storage
 
 import com.azure.storage.blob.{ BlobServiceClient, BlobServiceClientBuilder }
-import sttp.client.HttpURLConnectionBackend
+import com.headstorm.azure.storage.models.Container
 import sttp.client._
 
+/**
+ *  Blob, Queue, Table, and File client sdk
+ *
+ * @tparam F
+ */
 class StorageClient[F[_]] extends AzureClient[F] {
 
-  private implicit val backend = HttpURLConnectionBackend()
+  private def accountURI(account: String) = uri"https://$account.blob.core.windows.net"
 
-  def connect(): Unit = {
+  def connect(account: String)(implicit backend: SttpBackend[F, fs2.Stream[F, Byte], NothingT]): Unit = {
 
     val blobServiceClient: BlobServiceClient = new BlobServiceClientBuilder().buildClient()
     blobServiceClient.getAccountUrl
 
-    // the `query` parameter is automatically url-encoded
-    // `sort` is removed, as the value is not defined
-    val request = basicRequest.get(uri"https://api.github.com/search/repositories")
+    val request = basicRequest.get(uri"${accountURI(account)}")
 
     val response = request.send()
 
-    println(response.body)
+    println(response)
   }
+
+  /**
+   * API to get all containers for an account. A container contains properties, metadata, and zero or more blobs
+   *
+   * @return a List of Azure Containers
+   */
+  def listBlobContainers: List[Container] = List()
+
 }
