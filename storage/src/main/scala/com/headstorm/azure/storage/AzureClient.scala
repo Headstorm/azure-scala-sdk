@@ -1,9 +1,11 @@
 package com.headstorm.azure.storage
 
-import sttp.client.{ NothingT, SttpBackend }
+import com.headstorm.azure.storage.auth.Authorize
+import sttp.model.Uri
 
 trait AzureClient[F[_]] {
 
-  def connect(account: String)(implicit backend: SttpBackend[F, fs2.Stream[F, Byte], NothingT]): Unit
+  def baseURI: Uri
+  def accessToken: String = Authorize.auth()
 
 }

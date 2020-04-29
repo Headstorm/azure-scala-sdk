@@ -36,7 +36,7 @@ lazy val commonSettings = Seq(
 
 lazy val wartremoverSettings = Seq(
   wartremoverWarnings in (Compile, compile) ++= Warts.allBut(Wart.ImplicitParameter, Wart.Any,
-    Wart.NonUnitStatements, Wart.Nothing)
+    Wart.NonUnitStatements, Wart.Nothing, Wart.DefaultArguments)
 )
 
 lazy val scalafmtSettings =
@@ -66,7 +66,10 @@ val commonDependencies = Seq(
   "io.circe" %% "circe-literal" % circeVersion,
 
   "com.azure" % "azure-storage-blob" % "12.6.0",
-  "com.softwaremill.sttp.client" %% "core" % "2.0.9",
+
+  "com.softwaremill.sttp.client" %% "core" % "2.1.0-RC1",
+  "com.softwaremill.sttp.client" %% "http4s-backend" % "2.1.0-RC1",
+  "com.softwaremill.sttp.client" %% "circe" % "2.1.0-RC1",
 
   "co.fs2" %% "fs2-core" % "2.3.0",
 

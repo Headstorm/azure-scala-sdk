@@ -19,3 +19,4 @@ This command needs to be rerun everytime the `build.sc` file is updated.
 ```bash
 mill storage.test 
 ```
+

@@ -1,35 +1,62 @@
 package com.headstorm.azure.storage
 
-import com.azure.storage.blob.{ BlobServiceClient, BlobServiceClientBuilder }
-import com.headstorm.azure.storage.models.Container
+import cats.effect.{ ConcurrentEffect, ContextShift, Sync, Timer }
+import cats.implicits._
+import com.headstorm.azure.storage.models.{ Blob, Container }
+import sttp.client.circe._
+import io.circe.{ Error => CirceError }
+import io.circe.generic.auto._
+import org.http4s.client.blaze.BlazeClientBuilder
 import sttp.client._
+import sttp.model.Uri
+
+import scala.concurrent.ExecutionContext
 
 /**
  *  Blob, Queue, Table, and File client sdk
  *
- * @tparam F
+ * @tparam F Effectful type
  */
-class StorageClient[F[_]] extends AzureClient[F] {
+object StorageClient {
 
-  private def accountURI(account: String) = uri"https://$account.blob.core.windows.net"
-
-  def connect(account: String)(implicit backend: SttpBackend[F, fs2.Stream[F, Byte], NothingT]): Unit = {
-
-    val blobServiceClient: BlobServiceClient = new BlobServiceClientBuilder().buildClient()
-    blobServiceClient.getAccountUrl
-
-    val request = basicRequest.get(uri"${accountURI(account)}")
-
-    val response = request.send()
-
-    println(response)
+  def usingClient[F[_]: ConcurrentEffect: ContextShift: Timer](
+    account: String
+  )(implicit sync: Sync[F]): F[StorageClient[F]] = {
+    import sttp.client.http4s._
+    val client = BlazeClientBuilder.apply[F](ExecutionContext.global)
+    Http4sBackend
+      .usingClientBuilder[F](client, BlockingIO.blockingContext("azure-storage-client"))
+      .use[F, StorageClient[F]](implicit backend => sync.pure(new StorageClient[F](account)))
   }
+}
+
+class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: String)(
+  implicit val backend: SttpBackend[F, fs2.Stream[F, Byte], NothingT]
+) extends AzureClient[F] {
+
+  val baseURI: Uri = uri"https://$account.blob.core.windows.net"
 
   /**
    * API to get all containers for an account. A container contains properties, metadata, and zero or more blobs
    *
    * @return a List of Azure Containers
    */
-  def listBlobContainers: List[Container] = List()
+  def listBlobContainers: F[Either[ResponseError[CirceError], Container]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/containers").response(asJson[Container]).send().map(_.body)
+
+  def listBlobs: F[Either[ResponseError[CirceError], Container]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/blobs").response(asJson[Container]).send().map(_.body)
+
+  def updateBlob(blob: Blob): F[Either[ResponseError[CirceError], Container]] =
+    basicRequest.auth
+      .bearer(accessToken)
+      .body(blob)
+      .post(uri"$baseURI/updateblob")
+      .response(asJson[Container])
+      .send()
+      .map(_.body)
+
+  def getBlob: F[Either[ResponseError[CirceError], Container]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob").response(asJson[Container]).send().map(_.body)
 
 }
