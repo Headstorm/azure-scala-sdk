@@ -42,9 +42,9 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: 
    * @return a List of Azure Containers
    */
   def listBlobContainers: F[Either[ResponseError[CirceError], Container]] =
-    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/containers").response(asJson[Container]).send().map(_.body)
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/containers?8989").response(asJson[Container]).send().map(_.body)
 
-  def listBlobs: F[Either[ResponseError[CirceError], Container]] =
+  def listBlobs: F[Either[ResponseError[CirceError], Blob]] =
     basicRequest.auth.bearer(accessToken).get(uri"$baseURI/blobs").response(asJson[Container]).send().map(_.body)
 
   def updateBlob(blob: Blob): F[Either[ResponseError[CirceError], Container]] =
