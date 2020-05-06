@@ -42,21 +42,25 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: 
    * @return a List of Azure Containers
    */
   def listBlobContainers: F[Either[ResponseError[CirceError], Container]] =
-    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/containers?8989").response(asJson[Container]).send().map(_.body)
-
-  def listBlobs: F[Either[ResponseError[CirceError], Blob]] =
-    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/blobs").response(asJson[Container]).send().map(_.body)
-
-  def updateBlob(blob: Blob): F[Either[ResponseError[CirceError], Container]] =
     basicRequest.auth
       .bearer(accessToken)
-      .body(blob)
-      .post(uri"$baseURI/updateblob")
+      .get(uri"$baseURI/containers?8989")
       .response(asJson[Container])
       .send()
       .map(_.body)
 
-  def getBlob: F[Either[ResponseError[CirceError], Container]] =
-    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob").response(asJson[Container]).send().map(_.body)
+  def listBlobs: F[Either[ResponseError[CirceError], List[Blob]]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/blobs").response(asJson[List[Blob]]).send().map(_.body)
+
+  def updateBlob(blob: Blob): F[Either[String, String]] =
+    basicRequest.auth
+      .bearer(accessToken)
+      .body(blob)
+      .post(uri"$baseURI/updateblob")
+      .send
+      .map(_.body)
+
+  def getBlob: F[Either[ResponseError[CirceError], Blob]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob").response(asJson[Blob]).send().map(_.body)
 
 }
