@@ -7,10 +7,6 @@ object storage extends SbtModule with ScalafmtModule{
    def circeVersion = "0.13.0"
    def odinVersion = "0.7.0"
 
-   // Keep this code sparkly clean with the POWER OF TYPES.  
-   def compileIvyDeps = Agg(ivy"org.wartremover::wartremover:2.4.7")  
-   def scalacPluginIvyDeps = Agg(ivy"org.wartremover::wartremover:2.4.7")
-
    def ivyDeps = Agg(
       ivy"io.circe::circe-core:${circeVersion}",
       ivy"io.circe::circe-generic:${circeVersion}",
@@ -37,7 +33,6 @@ object storage extends SbtModule with ScalafmtModule{
    )
 
    def scalacOptions = Seq(
-      "-P:wartremover:traverser:org.wartremover.warts.Unsafe", // Wart remover for all Unsafe warts 
       "-deprecation", // Emit warning and location for usages of deprecated APIs.
       "-explaintypes", // Explain type errors in more detail.
       "-feature", // Emit warning and location for usages of features that should be imported explicitly.
