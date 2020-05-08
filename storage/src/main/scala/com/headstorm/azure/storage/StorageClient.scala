@@ -1,10 +1,10 @@
 package com.headstorm.azure.storage
 
-import cats.effect.{ ConcurrentEffect, ContextShift, Sync, Timer }
+import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
 import cats.implicits._
-import com.headstorm.azure.storage.models.{ Blob, Container }
+import com.headstorm.azure.storage.models.{Blob, ListContainerResponse}
 import sttp.client.circe._
-import io.circe.{ Error => CirceError }
+import io.circe.{Error => CirceError}
 import io.circe.generic.auto._
 import org.http4s.client.blaze.BlazeClientBuilder
 import sttp.client._
@@ -41,11 +41,11 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: 
    *
    * @return a List of Azure Containers
    */
-  def listBlobContainers: F[Either[ResponseError[CirceError], Container]] =
+  def listBlobContainers: F[Either[ResponseError[CirceError], ListContainerResponse]] =
     basicRequest.auth
       .bearer(accessToken)
       .get(uri"$baseURI/containers?8989")
-      .response(asJson[Container])
+      .response(asJson[ListContainerResponse])
       .send()
       .map(_.body)
 
