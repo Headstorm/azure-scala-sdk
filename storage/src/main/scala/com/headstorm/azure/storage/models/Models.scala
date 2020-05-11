@@ -1,30 +1,54 @@
 package com.headstorm.azure.storage.models
 
-import java.util.Date
+import java.time.LocalDateTime
 
-import com.headstorm.azure.storage.models.LeaseDuration.LeaseDuration
-import com.headstorm.azure.storage.models.LeaseState.LeaseState
-import com.headstorm.azure.storage.models.LeaseStatus.LeaseStatus
-import com.headstorm.azure.storage.models.PublicAccess.PublicAccess
+import enumeratum._
 
-object LeaseStatus extends Enumeration {
-  type LeaseStatus = Value
-  val locked, unlocked = Value
+sealed trait LeaseStatus extends EnumEntry
+
+case object LeaseStatus extends Enum[LeaseStatus] with CirceEnum[LeaseStatus] {
+
+  case object locked  extends LeaseStatus
+  case object unlocked extends LeaseStatus
+
+  val values = findValues
+
 }
 
-object LeaseState extends Enumeration {
-  type LeaseState = Value
-  val available, leased, expired, breaking, broken = Value
+sealed trait LeaseState extends EnumEntry
+
+case object LeaseState extends Enum[LeaseState] with CirceEnum[LeaseState] {
+
+  case object available  extends LeaseState
+  case object leased extends LeaseState
+  case object expired  extends LeaseState
+  case object breaking extends LeaseState
+  case object broken  extends LeaseState
+
+  val values = findValues
+
 }
 
-object LeaseDuration extends Enumeration {
-  type LeaseDuration = Value
-  val infinite, fixed = Value
+sealed trait LeaseDuration extends EnumEntry
+
+case object LeaseDuration extends Enum[LeaseDuration] with CirceEnum[LeaseDuration] {
+
+  case object infinite  extends LeaseDuration
+  case object fixed extends LeaseDuration
+
+  val values = findValues
+
 }
 
-object PublicAccess extends Enumeration {
-  type PublicAccess = Value
-  val container, blob = Value
+sealed trait PublicAccess extends EnumEntry
+
+case object PublicAccess extends Enum[PublicAccess] with CirceEnum[PublicAccess] {
+
+  case object container  extends PublicAccess
+  case object blob extends PublicAccess
+
+  val values = findValues
+
 }
 
 final case class ListContainerResponse(
@@ -40,7 +64,7 @@ final case class MetaData(
 )
 
 final case class ContainerProperties(
-  `Last-Modified`: Date,
+  `Last-Modified`: LocalDateTime,
   Etag: String,
   LeaseStatus: LeaseStatus,
   LeaseState: LeaseState,
