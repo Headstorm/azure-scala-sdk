@@ -60,7 +60,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: 
       .send
       .map(_.body)
 
-  def getBlob: F[Either[ResponseError[CirceError], Blob]] =
-    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob").response(asJson[Blob]).send().map(_.body)
+  def getBlob(name: String): F[Either[ResponseError[CirceError], Blob]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob/$name").response(asJson[Blob]).send().map(_.body)
 
 }

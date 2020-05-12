@@ -1,15 +1,35 @@
 package com.heastorm.azurescalasdk.storage
 
-import cats.effect.IOApp
+import cats.effect.{ ExitCode, IO, IOApp }
 import com.headstorm.azure.storage.StorageClient
-import org.scalatest._
+import com.headstorm.azure.storage.models.{ Blob, BlobContainerProperties }
+import org.scalatest.funsuite.AnyFunSuite
 
-class StorageClientTest extends FunSuite with IOApp {
+class StorageClientTest extends AnyFunSuite with IOApp {
 
-  val storageClient = StorageClient.usingClient("test-account")
+  def run(args: List[String]): IO[ExitCode] = IO.never
 
-  test("1 should equal 3 - 2") {
-    assert(1 == 3 - 2)
+  val storageClient = StorageClient.usingClient[IO]("test-account")
+
+  test("should get list of containers") {
+    for {
+      client <- storageClient
+      result <- client.listBlobContainers
+    } yield assert(result.toOption.isDefined)
+  }
+
+  test("should update a blob") {
+    for {
+      client <- storageClient
+      result <- client.updateBlob(Blob("test", BlobContainerProperties()))
+    } yield assert(result.toOption.isDefined)
+  }
+
+  test("should get a blob") {
+    for {
+      client <- storageClient
+      result <- client.getBlob("test")
+    } yield assert(result.toOption.isDefined)
   }
 
 }
