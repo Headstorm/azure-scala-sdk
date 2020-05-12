@@ -32,4 +32,11 @@ class StorageClientTest extends AnyFunSuite with IOApp {
     } yield assert(result.toOption.isDefined)
   }
 
+  test("should get a list of blobs") {
+    for {
+      client <- storageClient
+      result <- client.listBlobs
+    } yield assert(result.toOption.isDefined)
+  }
+
 }
