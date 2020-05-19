@@ -1,4 +1,4 @@
-package com.heastorm.azurescalasdk.storage
+package com.headstorm.azurescalasdk.storage
 
 import cats.effect.{ ExitCode, IO, IOApp }
 import com.headstorm.azure.storage.StorageClient

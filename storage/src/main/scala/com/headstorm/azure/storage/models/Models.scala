@@ -1,6 +1,8 @@
 package com.headstorm.azure.storage.models
 
-final case class Container()
+final case class Container(
+  //TODO
+)
 
 final case class Blob(
   name: String,
@@ -9,7 +11,8 @@ final case class Blob(
 )
 
 final case class BlobContainerProperties(
-  )
+  //TODO
+)
 
 final case class File()
 
