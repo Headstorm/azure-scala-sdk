@@ -10,9 +10,6 @@ workflows:
     jobs:
       - build
       - test
-  build_and_push_image:
-    jobs:
-      - stage
 
 jobs:
   build:
