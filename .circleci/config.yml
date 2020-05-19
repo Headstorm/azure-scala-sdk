@@ -1,41 +1,50 @@
-version: 2
+# Scala CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/sample-config/ for more details
+version: 2.1
+
+orbs:
+  slack: circleci/slack@3.4.2
+
+workflows:
+  compile_and_test:
+    jobs:
+      - build
+      - test
+  build_and_push_image:
+    jobs:
+      - stage
+
 jobs:
   build:
-    working_directory: ~/samplescala
     docker:
-      - image: openjdk:8
+      - image: circleci/openjdk:11-jdk
+
+    working_directory: ~/storage
+
     environment:
-      SBT_VERSION: 1.0.4
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
     steps:
-      - run: echo 'export ARTIFACT_BUILD=$CIRCLE_PROJECT_REPONAME-$CIRCLE_BUILD_NUM.zip' >> $BASH_ENV
-      - run:
-          name: Get sbt binary
-          command: |
-                    apt update && apt install -y curl
-                    curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb
-                    dpkg -i sbt-$SBT_VERSION.deb
-                    rm sbt-$SBT_VERSION.deb
-                    apt-get update
-                    apt-get install -y sbt python-pip git
-                    pip install awscli
-                    apt-get clean && apt-get autoclean
       - checkout
-      - restore_cache:
-          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
-          key: sbt-cache
+
       - run:
-          name: Compile samplescala dist package
-          command: cat /dev/null | sbt clean update dist
-      - store_artifacts: # for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
-          path: target/universal/samplescala.zip
-          destination: samplescala
-      - save_cache:
-          key: sbt-cache
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-      - deploy:
-          command: |
-              mv target/universal/samplescala.zip $CIRCLE_ARTIFACTS/$ARTIFACT_BUILD
-              aws s3 cp $CIRCLE_ARTIFACTS/$ARTIFACT_BUILD s3://samplescala.blogs/builds/ --metadata {\"git_sha1\":\"$CIRCLE_SHA1\"}
+          name: Build source
+          command: sbt compile
+
+  test:
+    docker:
+      - image: circleci/openjdk:11-jdk
+
+    working_directory: ~/storage
+
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
+    steps:
+      - checkout
+
+      - run:
+          name: Run tests
+          command: sbt test

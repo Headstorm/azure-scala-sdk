@@ -19,6 +19,7 @@ developers := List(
     email="nlundin@headstorm.com", url=url("http://www.headstorm.com"))
 )
 
+
 parallelExecution in Test := false
 
 shellPrompt := { state => scala.Console.YELLOW + "[" + scala.Console.CYAN + Project.extract(state).currentProject.id + scala.Console.YELLOW + "]" + scala.Console.RED + " $ " + scala.Console.RESET }
@@ -60,6 +61,8 @@ val circeVersion                 = "0.13.0"
 val odinVersion                  = "0.7.0"
 
 val commonDependencies = Seq(
+  "com.beachape" %% "enumeratum" % "1.6.0",
+  "com.beachape" %% "enumeratum-circe" % "1.6.0",
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,

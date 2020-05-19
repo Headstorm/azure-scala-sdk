@@ -6,8 +6,11 @@ object storage extends SbtModule with ScalafmtModule{
    def scalaVersion = "2.13.1"
    def circeVersion = "0.13.0"
    def odinVersion = "0.7.0"
+   def enumeratumVersion = "1.6.0"
 
    def ivyDeps = Agg(
+      ivy"com.beachape::enumeratum:${enumeratumVersion}",
+      ivy"com.beachape::enumeratum-circe:${enumeratumVersion}",
       ivy"io.circe::circe-core:${circeVersion}",
       ivy"io.circe::circe-generic:${circeVersion}",
       ivy"io.circe::circe-parser:${circeVersion}",
