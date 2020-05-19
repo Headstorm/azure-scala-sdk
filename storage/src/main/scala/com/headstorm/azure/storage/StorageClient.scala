@@ -1,10 +1,10 @@
 package com.headstorm.azure.storage
 
-import cats.effect.{ConcurrentEffect, ContextShift, Sync, Timer}
+import cats.effect.{ ConcurrentEffect, ContextShift, Sync, Timer }
 import cats.implicits._
-import com.headstorm.azure.storage.models.{Blob, ListContainerResponse}
+import com.headstorm.azure.storage.models.{ Blob, ListContainerResponse }
 import sttp.client.circe._
-import io.circe.{Error => CirceError}
+import io.circe.{ Error => CirceError }
 import io.circe.generic.auto._
 import org.http4s.client.blaze.BlazeClientBuilder
 import sttp.client._
@@ -42,14 +42,17 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: 
    * @return a List of Azure Containers
    */
   def listBlobContainers(
-                          prefix: Option[String] = None,
-                          marker: Option[String] = None,
-                          maxResults: Option[Integer] = None,
-                          includeMetaData : Option[Boolean] = None,
-                          timeoutSeconds: Option[Integer] = None): F[Either[ResponseError[CirceError], ListContainerResponse]] =
+    prefix: Option[String] = None,
+    marker: Option[String] = None,
+    maxResults: Option[Integer] = None,
+    includeMetaData: Option[Boolean] = None,
+    timeoutSeconds: Option[Integer] = None
+  ): F[Either[ResponseError[CirceError], ListContainerResponse]] =
     basicRequest.auth
       .bearer(accessToken)
-      .get(uri"$baseURI/?comp=list&prefix=$prefix&marker=$marker&maxResults=$maxResults&includeMetaData=$includeMetaData&timeout=$timeoutSeconds")
+      .get(
+        uri"$baseURI/?comp=list&prefix=$prefix&marker=$marker&maxResults=$maxResults&includeMetaData=$includeMetaData&timeout=$timeoutSeconds"
+      )
       .contentType("application/json")
       .response(asJson[ListContainerResponse])
       .send()
@@ -66,7 +69,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift: Sync: Timer](account: 
       .send
       .map(_.body)
 
-  def getBlob: F[Either[ResponseError[CirceError], Blob]] =
-    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob").response(asJson[Blob]).send().map(_.body)
+  def getBlob(name: String): F[Either[ResponseError[CirceError], Blob]] =
+    basicRequest.auth.bearer(accessToken).get(uri"$baseURI/getblob/$name").response(asJson[Blob]).send().map(_.body)
 
 }
