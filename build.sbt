@@ -85,7 +85,10 @@ val commonDependencies = Seq(
   "com.github.valskalla" %% "odin-json" % odinVersion,
   "com.github.valskalla" %% "odin-extras" % odinVersion,
 
-  "org.scalatest" %% "scalatest" % "3.1.1" % "test"
+  "org.scalatest" %% "scalatest" % "3.1.1" % Test,
+  "org.typelevel" %% "cats-laws" % "2.0.0" % Test,
+  "org.typelevel" %% "discipline-core" % "1.0.0" % Test,
+  "org.typelevel" %% "discipline-scalatest" % "1.0.1" % Test
 )
 
 import com.scalapenos.sbt.prompt.SbtPrompt.autoImport._

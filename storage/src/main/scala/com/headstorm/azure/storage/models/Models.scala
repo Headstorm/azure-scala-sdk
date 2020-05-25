@@ -80,6 +80,14 @@ final case class Container(
   ContainerProperties: ContainerProperties
 )
 
+final case class ListBlobResponse(
+  Prefix: Option[String] = None,
+  Marker: String,
+  NextMarker: String,
+  MaxResults: Int,
+  Blobs: List[Blob]
+)
+
 final case class Blob(
   name: String,
   properties: BlobContainerProperties,

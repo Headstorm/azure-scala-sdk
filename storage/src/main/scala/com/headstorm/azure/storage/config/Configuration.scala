@@ -1,3 +1,7 @@
 package com.headstorm.azure.storage.config
 
-class Configuration {}
+object Configuration {
+
+  val authKey = "TODO FROM CONFIG"
+
+}
