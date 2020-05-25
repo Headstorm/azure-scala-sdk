@@ -9,7 +9,7 @@ import sttp.model.Header
 object Headers {
 
   def auth(accountName: String): Header = {
-    val key = Configuration.authKey
+    val key = Configuration.sharedAccessKey
     Header("Authorization", s"SharedKey $accountName:$key")
   }
 
