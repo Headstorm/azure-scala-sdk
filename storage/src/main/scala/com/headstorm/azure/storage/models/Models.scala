@@ -1,6 +1,8 @@
 package com.headstorm.azure.storage.models
 
 import java.time.LocalDateTime
+import io.circe.generic.auto._
+import io.circe.syntax._
 
 import enumeratum._
 
@@ -88,11 +90,15 @@ final case class ListBlobResponse(
   Blobs: List[Blob]
 )
 
+final case class PutBlobResponse()
+
 final case class Blob(
   name: String,
   properties: BlobContainerProperties,
   metadata: Map[String, String] = Map[String, String]()
-)
+) {
+  def toJson = this.asJson.spaces4
+}
 
 final case class BlobContainerProperties()
 

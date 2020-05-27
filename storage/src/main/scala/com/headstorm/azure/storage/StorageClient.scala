@@ -3,7 +3,7 @@ package com.headstorm.azure.storage
 import cats.effect.{ ConcurrentEffect, ContextShift, Resource }
 import cats.implicits._
 import com.headstorm.azure.storage.headers.Headers
-import com.headstorm.azure.storage.models.{ ListBlobResponse, ListContainerResponse }
+import com.headstorm.azure.storage.models.{ Blob, ListBlobResponse, ListContainerResponse, PutBlobResponse }
 import sttp.client.circe._
 import io.circe.{ Error => CirceError }
 import io.circe.generic.auto._
@@ -81,4 +81,68 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
       .send()
       .map(_.body)
 
+  /**
+   * API to get a single blob.
+   *
+   * @return a Blob from a specified container
+   */
+  def getBlob(
+    container: String,
+    includeMetaData: Option[Boolean] = None,
+    timeoutSeconds: Option[Integer] = None
+  ): F[Either[ResponseError[CirceError], Blob]] =
+    basicRequest
+      .header(Headers.auth(account))
+      .header(Headers.version)
+      .header(Headers.date)
+      .get(
+        uri"$baseURI/$container?restype=container&includeMetaData=$includeMetaData&timeout=$timeoutSeconds"
+      )
+      .contentType("application/json")
+      .response(asJson[Blob])
+      .send()
+      .map(_.body)
+
+  /**
+   * API to update a blob.
+   *
+   * @return a success or failure
+   */
+  def putBlob(
+    blob: Blob,
+    container: String,
+    timeoutSeconds: Option[Integer] = None
+  ): F[Either[ResponseError[CirceError], Unit]] =
+    basicRequest
+      .header(Headers.auth(account))
+      .header(Headers.version)
+      .header(Headers.date)
+      .put(
+        uri"$baseURI/$container?restype=container&timeout=$timeoutSeconds"
+      )
+      .body(blob.toJson, "application/json")
+      .contentType("application/json")
+      .response(asJson[PutBlobResponse])
+      .send()
+      .map(_.body)
+
+  /**
+   * API to delete a blob.
+   *
+   * @return a success or failure
+   */
+  def deleteBlob(
+    container: String,
+    timeoutSeconds: Option[Integer] = None
+  ): F[Either[ResponseError[CirceError], Unit]] =
+    basicRequest
+      .header(Headers.auth(account))
+      .header(Headers.version)
+      .header(Headers.date)
+      .delete(
+        uri"$baseURI/$container?restype=container&timeout=$timeoutSeconds"
+      )
+      .contentType("application/json")
+      .send()
+      .map(_.body)
 }
