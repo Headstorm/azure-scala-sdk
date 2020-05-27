@@ -2,6 +2,7 @@ package com.headstorm.azurescalasdk.storage
 
 import cats.effect.{ ExitCode, IO, IOApp }
 import com.headstorm.azure.storage.StorageClient
+import com.headstorm.azure.storage.models.{ Blob, BlobContainerProperties }
 import org.scalatest.funsuite.AnyFunSuite
 
 class StorageClientTest extends AnyFunSuite with IOApp {
@@ -18,13 +19,15 @@ class StorageClientTest extends AnyFunSuite with IOApp {
         (for {
           result1 <- storageClient.createContainer("test").map(_.left.map(b => println(b.body)))
           result2 <- storageClient.getBlobs("test").map(_.left.map(b => println(b.body)))
-//          result3 <- storageClient.updateBlob(Blob("test", BlobContainerProperties())).map(_.left.map(b => println(b)))
-//          result4 <- storageClient.listBlobs.map(_.left.map(b => println(b.getMessage)))
+          result3 <- storageClient
+                      .putBlob(Blob("test", BlobContainerProperties(), Map()), "test")
+                      .map(_.left.map(b => println(b)))
+          result4 <- storageClient.deleteBlob("test", "test").map(_.left.map(b => println(b.getMessage)))
         } yield {
           assert(result1.isRight)
           assert(result2.isRight)
-//          assert(result3.isRight)
-//          assert(result4.isRight)
+          assert(result3.isRight)
+          assert(result4.isRight)
         }).unsafeRunSync()
         IO.pure(ExitCode.Success)
       }

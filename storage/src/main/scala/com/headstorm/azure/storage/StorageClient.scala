@@ -120,7 +120,8 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
       .put(
         uri"$baseURI/$container?restype=container&timeout=$timeoutSeconds"
       )
-      .body(blob.toJson, "application/json")
+      .contentType("application/json")
+      .body(blob.toJson)
       .send()
       .map { response =>
         response.code.isSuccess match {
@@ -135,6 +136,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
    * @return a success or failure
    */
   def deleteBlob(
+    blobId: String,
     container: String,
     timeoutSeconds: Option[Integer] = None
   ): F[Either[ResponseError[String], Unit]] =
@@ -143,7 +145,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
       .header(Headers.version)
       .header(Headers.date)
       .delete(
-        uri"$baseURI/$container?restype=container&timeout=$timeoutSeconds"
+        uri"$baseURI/$container/$blobId?timeout=$timeoutSeconds"
       )
       .contentType("application/json")
       .send()
