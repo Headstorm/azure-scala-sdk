@@ -3,7 +3,7 @@ package com.headstorm.azure.storage
 import cats.effect.{ ConcurrentEffect, ContextShift, Resource }
 import cats.implicits._
 import com.headstorm.azure.storage.headers.Headers
-import com.headstorm.azure.storage.models.{ Blob, ListBlobResponse, ListContainerResponse, PutBlobResponse }
+import com.headstorm.azure.storage.models.{ Blob, ListBlobResponse, ListContainerResponse }
 import sttp.client.circe._
 import io.circe.{ Error => CirceError }
 import io.circe.generic.auto._
@@ -112,7 +112,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
     blob: Blob,
     container: String,
     timeoutSeconds: Option[Integer] = None
-  ): F[Either[ResponseError[CirceError], Unit]] =
+  ): F[Either[ResponseError[String], Unit]] =
     basicRequest
       .header(Headers.auth(account))
       .header(Headers.version)
@@ -121,10 +121,13 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
         uri"$baseURI/$container?restype=container&timeout=$timeoutSeconds"
       )
       .body(blob.toJson, "application/json")
-      .contentType("application/json")
-      .response(asJson[PutBlobResponse])
       .send()
-      .map(_.body)
+      .map { response =>
+        response.code.isSuccess match {
+          case true  => Right(())
+          case false => Left(HttpError("Error calling Azure PUT API"))
+        }
+      }
 
   /**
    * API to delete a blob.
@@ -134,7 +137,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
   def deleteBlob(
     container: String,
     timeoutSeconds: Option[Integer] = None
-  ): F[Either[ResponseError[CirceError], Unit]] =
+  ): F[Either[ResponseError[String], Unit]] =
     basicRequest
       .header(Headers.auth(account))
       .header(Headers.version)
@@ -144,5 +147,10 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
       )
       .contentType("application/json")
       .send()
-      .map(_.body)
+      .map { response =>
+        response.code.isSuccess match {
+          case true  => Right(())
+          case false => Left(HttpError("Error calling Azure DELETE API"))
+        }
+      }
 }

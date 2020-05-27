@@ -90,14 +90,12 @@ final case class ListBlobResponse(
   Blobs: List[Blob]
 )
 
-final case class PutBlobResponse()
-
 final case class Blob(
   name: String,
   properties: BlobContainerProperties,
   metadata: Map[String, String] = Map[String, String]()
 ) {
-  def toJson = this.asJson.spaces4
+  def toJson: String = this.asJson.spaces4
 }
 
 final case class BlobContainerProperties()
