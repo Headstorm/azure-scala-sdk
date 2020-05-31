@@ -5,12 +5,12 @@ import pureconfig.generic.auto._
 import pureconfig._
 
 object Configuration {
-  val sharedAccessKey: String = ConfigSource.default.at("azala").load[AzalaConfig] match {
-    case Right(configuration) => configuration.sharedAccessKey
+  val storageAccountKey: String = ConfigSource.default.at("azala").load[AzalaConfig] match {
+    case Right(configuration) => configuration.storageAccountKey
     case Left(error) =>
       println(error.toList.toString())
       sys.exit(1)
   }
 }
 
-final case class AzalaConfig(sharedAccessKey: String)
+final case class AzalaConfig(storageAccountKey: String)

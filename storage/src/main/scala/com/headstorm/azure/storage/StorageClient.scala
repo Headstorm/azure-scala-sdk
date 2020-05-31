@@ -45,7 +45,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
     timeoutSeconds: Option[Integer] = None
   ): F[Either[ResponseError[CirceError], ListContainerResponse]] =
     basicRequest
-      .header(Headers.auth(account))
+      .header(Headers.auth(account, "PUT", s"/$account/$container\nrestype:container"))
       .header(Headers.version)
       .header(Headers.date)
       .put(
@@ -70,7 +70,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
     timeoutSeconds: Option[Integer] = None
   ): F[Either[ResponseError[CirceError], ListBlobResponse]] =
     basicRequest
-      .header(Headers.auth(account))
+      .header(Headers.auth(account, "GET", s"/$account/$container\ncomp:list\nrestype:container"))
       .header(Headers.version)
       .header(Headers.date)
       .get(
@@ -92,7 +92,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
     timeoutSeconds: Option[Integer] = None
   ): F[Either[ResponseError[CirceError], Blob]] =
     basicRequest
-      .header(Headers.auth(account))
+      .header(Headers.auth(account, "GET", s"/$account/$container\nrestype:container"))
       .header(Headers.version)
       .header(Headers.date)
       .get(
@@ -114,7 +114,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
     timeoutSeconds: Option[Integer] = None
   ): F[Either[ResponseError[String], Unit]] =
     basicRequest
-      .header(Headers.auth(account))
+      .header(Headers.auth(account, "PUT", s"/$account/$container/\nrestype:container"))
       .header(Headers.version)
       .header(Headers.date)
       .put(
@@ -141,7 +141,7 @@ class StorageClient[F[_]: ConcurrentEffect: ContextShift](account: String)(
     timeoutSeconds: Option[Integer] = None
   ): F[Either[ResponseError[String], Unit]] =
     basicRequest
-      .header(Headers.auth(account))
+      .header(Headers.auth(account, "DELETE", s"/$account/$container"))
       .header(Headers.version)
       .header(Headers.date)
       .delete(
